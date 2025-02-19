@@ -10,6 +10,7 @@ build:
 
 object:
 	cargo clean
+	rm -rdf target-obj
 	CARGO_BUILD_TARGET_DIR=target-obj cargo rustc -- --emit=obj
 	echo "Object file generated in target-obj/riscv64gc-unknown-none-elf/debug/deps/"
 

@@ -12,8 +12,6 @@ const UART_LSR_EMPTY_MASK: u8 = 0x20;               // Transmitter Empty bit
                                                     // we probably need to enable uart fifo as per https://www.youtube.com/watch?v=HC7b1SVXoKM
 extern crate panic_halt;
 
-use riscv_rt::entry;
-
 fn write_c(c: u8) {
     unsafe {
         while (*UART_LSR & UART_LSR_EMPTY_MASK) == 0 {}
@@ -21,13 +19,16 @@ fn write_c(c: u8) {
     }
 }
 
-#[entry]
-fn main() -> ! {
-    let hello_str = b"hello, world!\n";
+extern "C" {
+    fn hello_again_from_c() -> ();
+}
 
+#[no_mangle]
+pub extern "C" fn hello_from_rust() -> () {
+    let hello_str = b"hello, from Rust!\n";
     for c in hello_str.iter() {
         write_c(*c);
     }
 
-    loop { }
+    unsafe { hello_again_from_c(); }
 }
